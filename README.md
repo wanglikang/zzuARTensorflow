@@ -1,0 +1,2 @@
+# zzuARTensorflow
+此项目独立服务于zzuAR项目，为它提供tensorflow模型训练支持，主要医用场景是在阿里云上使用GPU训练数据
