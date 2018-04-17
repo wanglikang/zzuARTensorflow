@@ -67,7 +67,7 @@ class Solver(object):
 
         for step in range(1, self.max_iter + 1):
             print("{}:第{}轮训练".format(datetime.datetime.now().strftime('%m-%d %H:%M:%S'),step))
-            time.sleep(1)
+            time.sleep(2)
             load_timer.tic()
             images, labels = self.data.get()
             load_timer.toc()
@@ -193,8 +193,8 @@ def main():
     yolo = YOLONet()
     solver = Solver(yolo, datautil)
     print('Start training ...')
-    solver.train()
-    #print("假装已经训练完毕啦")
+    #solver.train()
+    print("假装已经训练完毕啦")
     print('Done training.')
 
 
