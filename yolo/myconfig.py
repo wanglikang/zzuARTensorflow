@@ -5,6 +5,7 @@ import os
 #
 
 DATA_ROOT_PATH = 'DIYdata'
+DATA_ZIPNAME='DIYdataV1.zip'
 
 MYDATA_PATH = os.path.join(DATA_ROOT_PATH, 'pics')
 

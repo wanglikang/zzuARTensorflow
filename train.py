@@ -125,9 +125,9 @@ class Solver(object):
 def update_config_paths(data_dir, weights_file):
     cfg.DATA_PATH = data_dir
     cfg.MYDATA_PATH = os.path.join(data_dir, 'pic')
-    cfg.CACHE_PATH = os.path.join(cfg.DATA_PATH, 'cache')
-    cfg.OUTPUT_DIR = os.path.join(cfg.DATA_PATH, 'output')
-    cfg.WEIGHTS_DIR = os.path.join(cfg.DATA_PATH, 'weights')
+    cfg.CACHE_PATH = os.path.join(cfg.DATA_ROOT_PATH, 'cache')
+    cfg.OUTPUT_DIR = os.path.join(cfg.DATA_ROOT_PATH, 'output')
+    cfg.WEIGHTS_DIR = os.path.join(cfg.DATA_ROOT_PATH, 'weights')
     cfg.WEIGHTS_FILE = os.path.join(cfg.WEIGHTS_DIR, weights_file)
 
 
@@ -166,13 +166,11 @@ def main():
     
     #os.environ['CUDA_VISIBLE_DEVICES'] = cfg.GPU
 
-    yolo = YOLONet()
-    datautil = MyDataUtil('DIYdata','train')
-
-    solver = Solver(yolo, datautil)
-
-    print('Start training ...')
-    solver.train()
+    datautil = MyDataUtil('DIYdata', 'train')
+    #yolo = YOLONet()
+    #solver = Solver(yolo, datautil)
+    #print('Start training ...')
+    #solver.train()
     #print("假装已经训练完毕啦")
     print('Done training.')
 

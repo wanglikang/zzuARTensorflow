@@ -5,10 +5,32 @@ import cv2
 import pickle
 import copy
 import yolo.myconfig as cfg
+import utils.DownloadUtil as DownloadUtil
+import utils.unzipFile as UnzipUtil
 
 
 class MyDataUtil(object):
+
+    def prepareData(self):
+        if not os.path.exists(cfg.DATA_ROOT_PATH):
+            downloader = DownloadUtil()
+            filepath = downloader.download(downloader.httpDomain+cfg.DATA_ZIPNAME,'')
+            zu = UnzipUtil()
+            zu.unzip(filepath)
+            zu.delself()
+            f = open('data.ok', 'rw')
+            f.writelines('ok')
+            f.flush()
+            f.close()
+        else :
+            f = open('data.ok','r')
+            if not os.path.exists(f):
+                os.removedirs(cfg.DATA_ROOT_PATH)
+                self.prepare()
+
+
     def __init__(self,data_root_path, phase, rebuild=False):
+        self.prepareData()
         self.data_root_path = data_root_path
         self.cache_path = cfg.CACHE_PATH
         self.batch_size = cfg.BATCH_SIZE
