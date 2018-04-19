@@ -4,7 +4,7 @@ import os
 
 class DownloadUtil(object):
 
-    def __init__(self,args):
+    def __init__(self):
         self.domain = 'oyqquzum6.bkt.clouddn.com/'
         self.httpDomain = 'http://oyqquzum6.bkt.clouddn.com/'
     def setDomain(self,newdomain):
@@ -14,5 +14,7 @@ class DownloadUtil(object):
         #url = 'http://%s/%s' % (domain, filename)
         #localpath="./downloadfile.a"
         # 或者直接输入url的方式下载
-        urllib.request.urlretrieve(url,path)
+        if not os.path.exists(path):
+            urllib.request.urlretrieve(url,path)
+            print('{} download done'.format(url))
         return os.path.join(os.getcwd(),path)

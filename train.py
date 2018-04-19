@@ -26,8 +26,7 @@ class Solver(object):
         self.staircase = cfg.STAIRCASE
         self.summary_iter = cfg.SUMMARY_ITER
         self.save_iter = cfg.SAVE_ITER
-        self.output_dir = os.path.join(
-            cfg.OUTPUT_DIR, datetime.datetime.now().strftime('%Y_%m_%d_%H_%M'))
+        self.output_dir = os.path.join(cfg.OUTPUT_DIR, cfg.DATA_VERSION)#按照不同的数据版本存放
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
         self.save_cfg()
@@ -167,10 +166,10 @@ def main():
     #os.environ['CUDA_VISIBLE_DEVICES'] = cfg.GPU
 
     datautil = MyDataUtil('DIYdata', 'train')
-    #yolo = YOLONet()
-    #solver = Solver(yolo, datautil)
-    #print('Start training ...')
-    #solver.train()
+    yolo = YOLONet()
+    solver = Solver(yolo, datautil)
+    print('Start training ...')
+    solver.train()
     #print("假装已经训练完毕啦")
     print('Done training.')
 

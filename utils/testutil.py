@@ -3,7 +3,7 @@ import os
 import datetime
 
 if __name__ == '__main__':
-   # testutil = data_util("../DIYdata")
+   # testutil = data_util("../DIYdata1")
 #    testutil.load_classes()
 #    testutil.getTrainData()
     epoch = 1
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     print(log_str)
 
 '''
-    pic_path = "/home/wlk/Develop/gitDownload/yolo_tensorflow/DIYdata/pics"
+    pic_path = "/home/wlk/Develop/gitDownload/yolo_tensorflow/DIYdata1/pics"
     filenames = []
     filenames = [x[:-4] for x in os.listdir(pic_path) if x[-4:] == ".jpg"]
     for nam in filenames:

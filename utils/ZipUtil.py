@@ -19,7 +19,8 @@ class ZipUtil(object):
         zip.close()
         print ('压缩文件成功 finished')
 
-
-    startdir = "yolo"  #要压缩的文件夹路径
+'''
+    startdir = "../DIYdatabk"  #要压缩的文件夹路径
     file_news = 'DIYdataV1' +'.zip' # 压缩后文件夹的名字
     zip_dir(startdir,file_news)
+'''

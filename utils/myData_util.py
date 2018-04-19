@@ -5,32 +5,50 @@ import cv2
 import pickle
 import copy
 import yolo.myconfig as cfg
-import utils.DownloadUtil as DownloadUtil
-import utils.unzipFile as UnzipUtil
+from utils.DownloadUtil import DownloadUtil
+from utils.UnzipUtil import UnzipUtil
 
 
 class MyDataUtil(object):
 
+    def removeAllsubDir(self,path):
+        for i in os.listdir(path):
+            #取文件绝对路径
+            path_file = os.path.join(path, i)
+            if os.path.isfile(path_file):
+                print("del file {}".format(path_file))
+                os.remove(path_file)
+            else:
+                print("del dir {}".format(path_file))
+                self.removeAllsubDir(path_file)
+                os.removedirs(path_file)
+
     def prepareData(self):
         if not os.path.exists(cfg.DATA_ROOT_PATH):
             downloader = DownloadUtil()
-            filepath = downloader.download(downloader.httpDomain+cfg.DATA_ZIPNAME,'')
+            print("start to download data")
+            filepath = downloader.download(downloader.httpDomain+'/'+cfg.DATA_ZIPNAME,cfg.DATA_ZIPNAME)
             zu = UnzipUtil()
-            zu.unzip(filepath)
-            zu.delself()
-            f = open('data.ok', 'rw')
+            print("start to unzip data:{}".format(filepath))
+            print("unzip to :{}".format(cfg.DATA_ROOT_PATH))
+            zu.unzip_file(filepath,cfg.DATA_ROOT_PATH)
+            #zu.delSelf()
+            f = open(os.path.join(cfg.DATA_ROOT_PATH,'data.ok'), 'w')
+            print("start to create ok file")
             f.writelines('ok')
             f.flush()
             f.close()
+            print("ok for download and unzip")
         else :
-            f = open('data.ok','r')
-            if not os.path.exists(f):
-                os.removedirs(cfg.DATA_ROOT_PATH)
-                self.prepare()
+            if not os.path.exists(os.path.join(cfg.DATA_ROOT_PATH,'data.ok')):
+                self.removeAllsubDir(cfg.DATA_ROOT_PATH)
+                self.prepareData()
+                print("ok for reDownload data")
 
 
     def __init__(self,data_root_path, phase, rebuild=False):
         self.prepareData()
+        print('ok for prepareData()')
         self.data_root_path = data_root_path
         self.cache_path = cfg.CACHE_PATH
         self.batch_size = cfg.BATCH_SIZE
@@ -78,7 +96,7 @@ class MyDataUtil(object):
         #print(gt_labels[100])
 
 
-        print("DIYdata prepare()")
+        print("DIYdata1 prepare()")
         if self.flipped:
             print('Appending horizontally-flipped training examples ...')
             gt_labels_cp = copy.deepcopy(gt_labels)

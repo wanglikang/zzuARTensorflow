@@ -4,6 +4,7 @@ import os
 # path and dataset parameter
 #
 
+DATA_VERSION = 'V1'
 DATA_ROOT_PATH = 'DIYdata'
 DATA_ZIPNAME='DIYdataV1.zip'
 
