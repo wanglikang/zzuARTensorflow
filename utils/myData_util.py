@@ -27,7 +27,7 @@ class MyDataUtil(object):
         if not os.path.exists(cfg.DATA_ROOT_PATH):
             downloader = DownloadUtil()
             print("start to download data")
-            filepath = downloader.download(downloader.httpDomain+'/'+cfg.DATA_ZIPNAME,cfg.DATA_ZIPNAME)
+            filepath = downloader.download(downloader.httpDomain+'/'+cfg.DATA_DownloadZipFileName,cfg.DATA_DownloadZipFileName)
             zu = UnzipUtil()
             print("start to unzip data:{}".format(filepath))
             print("unzip to :{}".format(cfg.DATA_ROOT_PATH))

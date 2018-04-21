@@ -4,10 +4,12 @@ import datetime
 import time
 import tensorflow as tf
 import yolo.myconfig as cfg
+from utils.Uploader import Uploader
 
 from utils.timer import Timer
 from yolo.yolo_net import YOLONet
 from utils.myData_util import MyDataUtil
+from utils.ZipUtil import ZipUtil
 import easydict
 
 slim = tf.contrib.slim
@@ -32,8 +34,9 @@ class Solver(object):
         self.save_cfg()
 
         self.variable_to_restore = tf.global_variables()
+
         self.saver = tf.train.Saver(self.variable_to_restore, max_to_keep=None)
-        self.ckpt_file = os.path.join(self.output_dir, 'yolo')
+        self.ckpt_file = os.path.join(self.output_dir, 'yolo.ckpt')
         self.summary_op = tf.summary.merge_all()
         self.writer = tf.summary.FileWriter(self.output_dir, flush_secs=60)
 
@@ -103,12 +106,33 @@ class Solver(object):
                 train_timer.toc()
 
             time.sleep(1)
-            if step % self.save_iter == 0:
+            #if step % self.save_iter == 0:
+            if step == 1:
                 print('{} Saving checkpoint file to: {}'.format(
                     datetime.datetime.now().strftime('%m-%d %H:%M:%S'),
                     self.output_dir))
+
+                #保存图是权值
                 self.saver.save(
                     self.sess, self.ckpt_file, global_step=self.global_step)
+                #保存图的结构
+                tf.train.write_graph(self.sess,
+                                     os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION,'model'),
+                                     'train.pbtxt')
+
+
+                freezetime = datetime.datetime.now().strftime('%m-%d-%H-%M-%S')
+                zu = ZipUtil()
+                zu.zip_dir(os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION),
+                           cfg.DATA_UploadZipFileName+'.'+freezetime)
+                qu = Uploader()
+                qu.setQiniuKEY('mMQxjyif6Uk8nSGIn9ZD3I19MBMEK3IUGngcX8_p',
+                               'J5gFhdpQ-1O1rkCnlqYnzPiH3XTst2Szlv9GlmQM')
+                qu.upload(cfg.DATA_UploadZipFileName+'.'+freezetime,
+                          cfg.DATA_UploadZipFileName+'.'+freezetime)
+                break
+        print("假装已经训练完成")
+
 
     def save_cfg(self):
 
