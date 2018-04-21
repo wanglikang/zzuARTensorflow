@@ -106,8 +106,8 @@ class Solver(object):
                 train_timer.toc()
 
             time.sleep(1)
-            #if step % self.save_iter == 0:
-            if step == 1:
+            if step % self.save_iter == 0:
+            #if step == 1:#测试保存功能时使用此行
                 print('{} Saving checkpoint file to: {}'.format(
                     datetime.datetime.now().strftime('%m-%d %H:%M:%S'),
                     self.output_dir))
