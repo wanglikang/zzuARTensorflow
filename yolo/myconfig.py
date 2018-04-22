@@ -14,7 +14,7 @@ secret_key = 'J5gFhdpQ-1O1rkCnlqYnzPiH3XTst2Szlv9GlmQM'
 access_key = ''
 secret_key = ''
 
-DATA_VERSION = 'V2'
+DATA_VERSION = 'V3'
 
 DATA_ROOT_PATH = 'DIYdata'
 DATA_ZIPNAME='DIYdata'+DATA_VERSION+'.zip'
