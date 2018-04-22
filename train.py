@@ -116,7 +116,7 @@ class Solver(object):
                 self.saver.save(
                     self.sess, self.ckpt_file, global_step=self.global_step)
                 #保存图的结构
-                tf.train.write_graph(self.sess,
+                tf.train.write_graph(self.sess.graph_def,
                                      os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION,'model'),
                                      'train.pbtxt')
 
@@ -193,8 +193,8 @@ def main():
     yolo = YOLONet()
     solver = Solver(yolo, datautil)
     print('Start training ...')
-    #solver.train()
-    print("假装已经训练完毕啦")
+    solver.train()
+    #print("假装已经训练完毕啦")
     print('Done training.')
 
 

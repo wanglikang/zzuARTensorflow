@@ -14,9 +14,11 @@ class Uploader(object):
         self.secret_key = secret_key
 
     def upload_hander(self,a,b):
-        print("已经上传了：{:.2f}%;{:.1f}M".format(a/b,a*1.0/1024/1024))
+        print("已经上传了：{:.2f}%;{:.1f}M".format(a*100/b,a*1.0/1024/1024))
 
     def upload(self,filepath,remotefilename,mprogress_handler=None):
+        if mprogress_handler==None:
+            mprogress_handler = self.upload_hander
 
         q = qiniu.Auth(self.access_key, self.secret_key)
         bucket_name = 'zzuar'

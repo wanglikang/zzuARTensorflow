@@ -15,18 +15,20 @@ class MyDataUtil(object):
         for i in os.listdir(path):
             #取文件绝对路径
             path_file = os.path.join(path, i)
+            #print(path_file)
             if os.path.isfile(path_file):
-                print("del file {}".format(path_file))
+                #print("del file {}".format(path_file))
                 os.remove(path_file)
             else:
-                print("del dir {}".format(path_file))
+                #print("del dir {}".format(path_file))
                 self.removeAllsubDir(path_file)
-                os.removedirs(path_file)
+        os.rmdir(path)
+
 
     def prepareData(self):
         if not os.path.exists(cfg.DATA_ROOT_PATH):
             downloader = DownloadUtil()
-            print("start to download data")
+            print('start to download data from :{}'.format(downloader.httpDomain+'/'+cfg.DATA_DownloadZipFileName,cfg.DATA_DownloadZipFileName))
             filepath = downloader.download(downloader.httpDomain+'/'+cfg.DATA_DownloadZipFileName,cfg.DATA_DownloadZipFileName)
             zu = UnzipUtil()
             print("start to unzip data:{}".format(filepath))
@@ -40,11 +42,17 @@ class MyDataUtil(object):
             f.close()
             print("ok for download and unzip")
         else :
-            if not os.path.exists(os.path.join(cfg.DATA_ROOT_PATH,'data.ok')):
+            if not os.path.exists(cfg.DATA_ROOT_PATH) or not os.path.exists(os.path.join(cfg.DATA_ROOT_PATH,'data.ok')):
                 self.removeAllsubDir(cfg.DATA_ROOT_PATH)
                 self.prepareData()
                 print("ok for reDownload data")
+        print(os.getcwd())
+        classf = open(os.path.join(cfg.DATA_ROOT_PATH, 'classes.txt'), 'r')
 
+        for line in classf.readlines():
+            line = line.replace('\n', '')
+            if len(str(line)) > 0:
+                cfg.CLASSES.append(str(line))
 
     def __init__(self,data_root_path, phase, rebuild=False):
         self.prepareData()
@@ -95,7 +103,6 @@ class MyDataUtil(object):
         gt_labels = self.load_labels()
         #print(gt_labels[100])
 
-
         print("DIYdata1 prepare()")
         if self.flipped:
             print('Appending horizontally-flipped training examples ...')
@@ -131,8 +138,10 @@ class MyDataUtil(object):
             os.makedirs(self.cache_path)
 
         if self.phase == 'train':
-            txtname = os.path.join(
-                self.data_root_path,'cfg','trainval.txt')
+            #txtname = os.path.join(
+            #   self.data_root_path,'cfg','trainval.txt')
+
+            txtname = self.createTrainavltxt(cfg.DATACFG_PATH,'trainval.txt')
         else:
             txtname = os.path.join(
                 self.data_root_path, 'test.txt')
@@ -182,6 +191,8 @@ class MyDataUtil(object):
             y2 = max(min((float(bbox.find('ymax').text) - 1) * h_ratio, self.image_size - 1), 0)
             print(imname)
             print(obj.find('name').text.lower().strip())
+            #if obj.find('name').text.lower().strip()=='zhongloud':
+                #print(index)
             cls_ind = self.class_to_ind[obj.find('name').text.lower().strip()]
 
 
@@ -195,3 +206,29 @@ class MyDataUtil(object):
             label[y_ind, x_ind, 5 + cls_ind] = 1
 
         return label, len(objs)
+
+    def createTrainavltxt(self,dir,filename):
+        imgs = []
+        labels = []
+        if not os.path.exists(cfg.DATACFG_PATH):
+            os.makedirs(cfg.DATACFG_PATH)
+
+
+        for a, b, c in os.walk(cfg.MYDATA_PATH):
+            for f in c:
+                if f[-3:] == 'jpg':
+                    imgs.append(f)
+                elif f[-3:] == 'xml':
+                    labels.append(f)
+
+        #imgs.sort()
+        #labels.sort()
+        #print(imgs)
+        #print(labels)
+        trainvaltxt = open(os.path.join(dir,filename), 'w')
+        for f in imgs:
+            trainvaltxt.write(f[:-4])
+            trainvaltxt.write('\n')
+        return os.path.join(dir,filename)
+
+
