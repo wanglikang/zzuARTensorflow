@@ -3,16 +3,18 @@ import cv2
 import argparse
 import numpy as np
 import tensorflow as tf
-import yolo.old_config as cfg
+#import yolo.old_config as cfg
+import yolo.myconfig as cfg
 from yolo.yolo_net import YOLONet
 from utils.timer import Timer
-
+from utils.myData_util import MyDataUtil
 
 class Detector(object):
 
-    def __init__(self, net, weight_file):
+    def __init__(self, net, weight_file=None,weight_dir=None):
         self.net = net
         self.weights_file = weight_file
+        self.weight_dir =weight_dir
 
         self.classes = cfg.CLASSES
         self.num_class = len(self.classes)
@@ -28,9 +30,17 @@ class Detector(object):
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
 
-        print('Restoring weights from: ' + self.weights_file)
-        self.saver = tf.train.Saver()
-        self.saver.restore(self.sess, self.weights_file)
+
+        if not self.weights_file==None:
+            print('Restoring weights from: ' + self.weights_file)
+            self.saver = tf.train.Saver()
+            self.saver.restore(self.sess, self.weights_file)
+        else:
+            self.saver = tf.train.Saver()
+            ckpt = tf.train.get_checkpoint_state(self.weight_dir)
+            if ckpt and ckpt.model_checkpoint_path:
+                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+                print("restor from {}".format(self.weight_dir))
 
     def draw_result(self, img, result):
         for i in range(len(result)):
@@ -185,6 +195,7 @@ class Detector(object):
 
 
 def main():
+    '''
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', default="YOLO_small.ckpt", type=str)
     parser.add_argument('--weight_dir', default='weights', type=str)
@@ -193,10 +204,16 @@ def main():
     args = parser.parse_args()
 
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+    '''
+    datautil = MyDataUtil('DIYdata','test')
 
     yolo = YOLONet(False)
-    weight_file = os.path.join(args.data_dir, args.weight_dir, args.weights)
-    detector = Detector(yolo, weight_file)
+    #weight_file = os.path.join('DIYdata', 'output/V3', 'yolo.ckpt')
+    #detector = Detector(yolo, weight_file)
+    #weight_dir = os.path.join('DIYdata', 'output/V3', 'yolo.ckpt')
+    #detector = Detector(yolo, weight_dir=weight_dir)
+
+    detector = Detector(yolo, weight_file='/home/wlk/Develop/gitDownload/yolo_tensorflow/data/YOLO_small.ckpt')
 
     # detect from camera
     cap = cv2.VideoCapture(-1)

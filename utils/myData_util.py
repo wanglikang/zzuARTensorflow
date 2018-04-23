@@ -46,32 +46,36 @@ class MyDataUtil(object):
                 self.removeAllsubDir(cfg.DATA_ROOT_PATH)
                 self.prepareData()
                 print("ok for reDownload data")
-        print(os.getcwd())
-        classf = open(os.path.join(cfg.DATA_ROOT_PATH, 'classes.txt'), 'r')
 
-        for line in classf.readlines():
-            line = line.replace('\n', '')
-            if len(str(line)) > 0:
-                cfg.CLASSES.append(str(line))
+
 
     def __init__(self,data_root_path, phase, rebuild=False):
-        self.prepareData()
-        print('ok for prepareData()')
-        self.data_root_path = data_root_path
-        self.cache_path = cfg.CACHE_PATH
-        self.batch_size = cfg.BATCH_SIZE
-        self.image_size = cfg.IMAGE_SIZE
-        self.cell_size = cfg.CELL_SIZE
-        self.classes = cfg.CLASSES
-        self.class_to_ind = dict(zip(self.classes, range(len(self.classes))))
-        self.classeslen = len(self.classes)
-        self.flipped = cfg.FLIPPED
-        self.phase = phase
-        self.rebuild = rebuild
-        self.cursor = 0
-        self.epoch = 1
-        self.gt_labels = None
-        self.prepare()
+        if phase=='test':
+            print(os.getcwd())
+            classf = open(os.path.join(cfg.DATA_ROOT_PATH, 'classes.txt'), 'r')
+            for line in classf.readlines():
+                line = line.replace('\n', '')
+                if len(str(line)) > 0:
+                    cfg.CLASSES.append(str(line))
+            print("仅仅用于test使用，不需要进行prepareData()")
+        else:
+            self.prepareData()
+            print('ok for prepareData()')
+            self.data_root_path = data_root_path
+            self.cache_path = cfg.CACHE_PATH
+            self.batch_size = cfg.BATCH_SIZE
+            self.image_size = cfg.IMAGE_SIZE
+            self.cell_size = cfg.CELL_SIZE
+            self.classes = cfg.CLASSES
+            self.class_to_ind = dict(zip(self.classes, range(len(self.classes))))
+            self.classeslen = len(self.classes)
+            self.flipped = cfg.FLIPPED
+            self.phase = phase
+            self.rebuild = rebuild
+            self.cursor = 0
+            self.epoch = 1
+            self.gt_labels = None
+            self.prepare()
 
     def get(self):
         images = np.zeros((self.batch_size, self.image_size, self.image_size, 3))
