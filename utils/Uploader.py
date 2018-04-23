@@ -1,11 +1,13 @@
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 import qiniu.config
 import yolo.myconfig as cfg
+import threading
 
-
-class Uploader(object):
+class Uploader(threading.Thread):
 
     def __init__(self):
+        threading.Thread.__init__(self)
+
         self.access_key = cfg.access_key
         self.secret_key = cfg.secret_key
         pass
@@ -14,21 +16,27 @@ class Uploader(object):
         self.secret_key = secret_key
 
     def upload_hander(self,a,b):
-        print("已经上传了：{:.2f}%;{:.1f}M".format(a*100/b,a*1.0/1024/1024))
+        print("{} 已经上传了：{:.2f}%;{:.1f}M".format(self.filepath,a*100/b,a*1.0/1024/1024))
 
     def upload(self,filepath,remotefilename,mprogress_handler=None):
+        self.remotefilename = remotefilename
+        self.filepath = filepath
         if mprogress_handler==None:
-            mprogress_handler = self.upload_hander
+            self.mprogress_handler = self.upload_hander
 
+        return self
+    def run(self):
         q = qiniu.Auth(self.access_key, self.secret_key)
         bucket_name = 'zzuar'
-        key = remotefilename
+        key = self.remotefilename
         token = q.upload_token(bucket_name, key, 3600)
-        localfile = filepath
-        ret, info = put_file(token, key, localfile,progress_handler=mprogress_handler)
+        localfile = self.filepath
+        ret, info = put_file(token, key, localfile,progress_handler=self.mprogress_handler)
         #print(info)
         print("上传完成")
-        print(filepath+"-->"+cfg.qiniuDomain+"/"+remotefilename)
+        print(self.filepath+"-->"+cfg.qiniuDomain+"/"+self.remotefilename)
+
+
 
 '''#测试用例
 qu = Uploader()

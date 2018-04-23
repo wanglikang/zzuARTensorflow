@@ -129,9 +129,9 @@ class Solver(object):
                 qu.setQiniuKEY('mMQxjyif6Uk8nSGIn9ZD3I19MBMEK3IUGngcX8_p',
                                'J5gFhdpQ-1O1rkCnlqYnzPiH3XTst2Szlv9GlmQM')
                 qu.upload(cfg.DATA_UploadZipFileName+'.'+freezetime,
-                          cfg.DATA_UploadZipFileName+'.'+freezetime)
-                break
-        print("假装已经训练完成")
+                          cfg.DATA_UploadZipFileName+'.'+freezetime).start()
+                #break
+        #print("假装已经训练完成")
 
 
     def save_cfg(self):
@@ -193,7 +193,7 @@ def main():
     yolo = YOLONet()
     solver = Solver(yolo, datautil)
     print('Start training ...')
-    solver.train()
+    #solver.train()
     #print("假装已经训练完毕啦")
     print('Done training.')
 

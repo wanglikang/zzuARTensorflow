@@ -1,1 +1,3 @@
 qiniu
+opencv-python
+easydict
