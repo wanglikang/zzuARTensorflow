@@ -3,6 +3,8 @@ import argparse
 import datetime
 import time
 import tensorflow as tf
+from tensorflow.python.framework import graph_util
+
 import yolo.myconfig as cfg
 from utils.Uploader import Uploader
 
@@ -112,7 +114,7 @@ class Solver(object):
                     datetime.datetime.now().strftime('%m-%d %H:%M:%S'),
                     self.output_dir))
 
-                #保存图是权值
+                #保存图的权值
                 self.saver.save(
                     self.sess, self.ckpt_file, global_step=self.global_step)
                 #保存图的结构
@@ -120,6 +122,22 @@ class Solver(object):
                                      os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION,'model'),
                                      'train.pbtxt')
 
+
+                #保存到权值对图，生成可供android使用的.pb文件
+                graph_def = tf.get_default_graph().as_graph_def()
+                output_graph_def = graph_util.convert_variables_to_constants(  # 模型持久化，将变量值固定
+                    self.sess,
+                    graph_def,
+                    ["net"]
+                    #self.net.logits
+                    #["predictions"]  # 需要保存节点的名字///////////////////////////////////需要再改改
+                )
+                with tf.gfile.GFile(
+                        os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION,'model','train.pb'),
+                        "wb") as f:  # 保存模型
+                    f.write(output_graph_def.SerializeToString())  # 序列化输出
+                print("%d ops in the final graph." % len(output_graph_def.node))
+####################################################################################################
 
                 freezetime = datetime.datetime.now().strftime('%m-%d-%H-%M-%S')
                 zu = ZipUtil()

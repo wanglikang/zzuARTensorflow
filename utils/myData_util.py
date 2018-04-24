@@ -59,6 +59,13 @@ class MyDataUtil(object):
                     cfg.CLASSES.append(str(line))
             print("仅仅用于test使用，不需要进行prepareData()")
         else:
+            print(os.getcwd())
+            classf = open(os.path.join(cfg.DATA_ROOT_PATH, 'classes.txt'), 'r')#得到classes
+            for line in classf.readlines():
+                line = line.replace('\n', '')
+                if len(str(line)) > 0:
+                    cfg.CLASSES.append(str(line))
+
             self.prepareData()
             print('ok for prepareData()')
             self.data_root_path = data_root_path
