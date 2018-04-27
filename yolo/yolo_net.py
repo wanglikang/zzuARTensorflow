@@ -66,11 +66,12 @@ class YOLONet(object):
                     images, np.array([[0, 0], [3, 3], [3, 3], [0, 0]]),
                     name='pad_1')
                 net = slim.conv2d(net, 64, 7, 2, padding='VALID', scope='conv_2')
+
                 net = slim.max_pool2d(net, 2, padding='SAME', scope='pool_3')
                 
                 net = slim.conv2d(net, 192, 3, scope='conv_4')
                 net = slim.max_pool2d(net, 2, padding='SAME', scope='pool_5')
-                
+
                 net = slim.conv2d(net, 128, 1, scope='conv_6')
                 net = slim.conv2d(net, 256, 3, scope='conv_7')
                 net = slim.conv2d(net, 256, 1, scope='conv_8')
@@ -105,6 +106,7 @@ class YOLONet(object):
                 net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training,scope='dropout_35')
                 net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
         return net
+
 
     def calc_iou(self, boxes1, boxes2, scope='iou'):
         """calculate ious

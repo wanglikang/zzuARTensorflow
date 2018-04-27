@@ -63,6 +63,7 @@ class Solver(object):
         self.writer.add_graph(self.sess.graph)
 
     def train(self):
+        isTest = False
 
         train_timer = Timer()
         load_timer = Timer()
@@ -78,7 +79,6 @@ class Solver(object):
 
             if step % self.summary_iter == 0:
                 if step % (self.summary_iter * 10) == 0:
-
                     train_timer.tic()
                     summary_str, loss, _ = self.sess.run(
                         [self.summary_op, self.net.total_loss, self.train_op],
@@ -108,50 +108,63 @@ class Solver(object):
                 train_timer.toc()
 
             time.sleep(1)
-            if step % self.save_iter == 0:
-            #if step == 1:#测试保存功能时使用此行
-                print('{} Saving checkpoint file to: {}'.format(
-                    datetime.datetime.now().strftime('%m-%d %H:%M:%S'),
-                    self.output_dir))
+            isTest = True
+            #if step % self.save_iter == 0:
+            if step == 1:#测试保存功能时使用此行
+                self.saveData(step)
+                break
+        print("假装已经训练完成")
 
-                #保存图的权值
-                self.saver.save(
-                    self.sess, self.ckpt_file, global_step=self.global_step)
-                #保存图的结构
-                tf.train.write_graph(self.sess.graph_def,
-                                     os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION,'model'),
-                                     'train.pbtxt')
+    def saveData(self,step):
+        print('{} Saving checkpoint file to: {}'.format(
+            datetime.datetime.now().strftime('%m-%d %H:%M:%S'),
+            self.output_dir))
 
+        # 保存图的权值
+        self.saver.save(
+            self.sess, self.ckpt_file, global_step=self.global_step)
+        # 保存图的结构
+        tf.train.write_graph(self.sess.graph_def,
+                             os.path.join(cfg.OUTPUT_DIR, cfg.DATA_VERSION, 'model'),
+                             'train.pbtxt')
 
-                #保存到权值对图，生成可供android使用的.pb文件
-                graph_def = tf.get_default_graph().as_graph_def()
-                output_graph_def = graph_util.convert_variables_to_constants(  # 模型持久化，将变量值固定
-                    self.sess,
-                    graph_def,
-                    ["net"]
-                    #self.net.logits
-                    #["predictions"]  # 需要保存节点的名字///////////////////////////////////需要再改改
-                )
-                with tf.gfile.GFile(
-                        os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION,'model','train.pb'),
-                        "wb") as f:  # 保存模型
-                    f.write(output_graph_def.SerializeToString())  # 序列化输出
-                print("%d ops in the final graph." % len(output_graph_def.node))
-####################################################################################################
+        # 保存到权值对图，生成可供android使用的.pb文件
+        graph_def = tf.get_default_graph().as_graph_def()
 
-                freezetime = datetime.datetime.now().strftime('%m-%d-%H-%M-%S')
-                zu = ZipUtil()
-                #添加啦step参数，可以按照训练对部署进行压缩，，不用全部压缩了
-                zu.zip_dir(os.path.join(cfg.OUTPUT_DIR,cfg.DATA_VERSION),step,
-                           cfg.DATA_UploadZipFileName+'.'+freezetime)
-                qu = Uploader()
-                qu.setQiniuKEY('mMQxjyif6Uk8nSGIn9ZD3I19MBMEK3IUGngcX8_p',
-                               'J5gFhdpQ-1O1rkCnlqYnzPiH3XTst2Szlv9GlmQM')
-                qu.upload(cfg.DATA_UploadZipFileName+'.'+freezetime,
-                          cfg.DATA_UploadZipFileName+'.'+freezetime).start()
-                #break
-        #print("假装已经训练完成")
+        print("global_variables are")
+        variables_to_save = []
 
+        for variables in self.sess.graph_def.node:
+            print("{}:{}".format(str(variables.name),type(variables)))
+            variables_to_save.append(str(variables.name).split(':')[0])
+
+        print("--------------")
+        output_graph_def = graph_util.convert_variables_to_constants(  # 模型持久化，将变量值固定
+            self.sess,
+            graph_def,
+            #['yolo/pad_1/paddings']
+            variables_to_save
+            #self.net.logits
+            # ["predictions"]  # 需要保存节点的名字///////////////////////////////////需要再改改
+        )
+        with tf.gfile.GFile(
+                os.path.join(cfg.OUTPUT_DIR, cfg.DATA_VERSION, 'model', 'train.pb'),
+                "wb") as f:  # 保存模型
+            f.write(output_graph_def.SerializeToString())  # 序列化输出
+        print("%d ops in the final graph." % len(output_graph_def.node))
+        ####################################################################################################
+
+        freezetime = datetime.datetime.now().strftime('%m-%d-%H-%M-%S')
+        zu = ZipUtil()
+        # 添加啦step参数，可以按照训练对部署进行压缩，，不用全部压缩了
+        zu.zip_dir(os.path.join(cfg.OUTPUT_DIR, cfg.DATA_VERSION),
+                   step,
+                   cfg.DATA_UploadZipFileName + '.' + freezetime)
+        qu = Uploader()
+        qu.setQiniuKEY('mMQxjyif6Uk8nSGIn9ZD3I19MBMEK3IUGngcX8_p',
+                       'J5gFhdpQ-1O1rkCnlqYnzPiH3XTst2Szlv9GlmQM')
+        qu.upload(cfg.DATA_UploadZipFileName + '.' + freezetime,
+                  cfg.DATA_UploadZipFileName + '.' + freezetime).start()
 
     def save_cfg(self):
 
