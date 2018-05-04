@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 cd nvidiacuda
 chmod 777 *
-./cuda-8.0.61_375.26_linux-run
+./cuda-8.0.61.2_linux-run
 cd ..
 cd cudnn
 tar -zxvf cudnn-8.0-linux-x64-v6.0.tgz
