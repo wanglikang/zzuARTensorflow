@@ -159,7 +159,7 @@ class Solver(object):
         # 添加啦step参数，可以按照训练对部署进行压缩，，不用全部压缩了
         zu.zip_dir(os.path.join(cfg.OUTPUT_DIR, cfg.DATA_VERSION),
                    step,
-                   cfg.DATA_UploadZipFileName ++'.'+step+ '.' + freezetime)
+                   cfg.DATA_UploadZipFileName +'.'+step+ '.' + freezetime)
         qu = Uploader()
         qu.setQiniuKEY('mMQxjyif6Uk8nSGIn9ZD3I19MBMEK3IUGngcX8_p',
                        'J5gFhdpQ-1O1rkCnlqYnzPiH3XTst2Szlv9GlmQM')
