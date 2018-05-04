@@ -204,10 +204,8 @@ class MyDataUtil(object):
             print(obj.find('name').text.lower().strip())
             #if obj.find('name').text.lower().strip()=='zhongloud':
                 #print(index)
-            try:
-                cls_ind = self.class_to_ind[obj.find('name').text.lower().strip()]
-            except Exception as e:
-                print("class error:--------------{}".format(index))
+
+            cls_ind = self.class_to_ind[obj.find('name').text.lower().strip()]
 
 
             boxes = [(x2 + x1) / 2.0, (y2 + y1) / 2.0, x2 - x1, y2 - y1]
