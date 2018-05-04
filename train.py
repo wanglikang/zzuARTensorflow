@@ -167,7 +167,6 @@ class Solver(object):
                   cfg.DATA_UploadZipFileName + '.' + freezetime).start()
 
     def save_cfg(self):
-
         with open(os.path.join(self.output_dir, 'config.txt'), 'w') as f:
             cfg_dict = cfg.__dict__
             for key in sorted(cfg_dict.keys()):
