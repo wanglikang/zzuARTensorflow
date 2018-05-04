@@ -109,11 +109,11 @@ class Solver(object):
 
             time.sleep(1)
             isTest = True
-            #if step % self.save_iter == 0:
-            if step == 1:#测试保存功能时使用此行
+            if step % self.save_iter == 0:
+            #if step == 1:#测试保存功能时使用此行
                 self.saveData(step)
-                break
-        print("假装已经训练完成")
+             #   break
+        #print("假装已经训练完成")
 
     def saveData(self,step):
         print('{} Saving checkpoint file to: {}'.format(
@@ -159,7 +159,7 @@ class Solver(object):
         # 添加啦step参数，可以按照训练对部署进行压缩，，不用全部压缩了
         zu.zip_dir(os.path.join(cfg.OUTPUT_DIR, cfg.DATA_VERSION),
                    step,
-                   cfg.DATA_UploadZipFileName + '.' + freezetime)
+                   cfg.DATA_UploadZipFileName ++'.'+step+ '.' + freezetime)
         qu = Uploader()
         qu.setQiniuKEY('mMQxjyif6Uk8nSGIn9ZD3I19MBMEK3IUGngcX8_p',
                        'J5gFhdpQ-1O1rkCnlqYnzPiH3XTst2Szlv9GlmQM')
@@ -231,6 +231,5 @@ def main():
 
 
 if __name__ == '__main__':
-
     # python train.py --weights YOLO_small.ckpt --gpu 0
     main()
